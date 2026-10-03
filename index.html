@@ -12,6 +12,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('theme'); } catch (e) {}
+      var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.classList.toggle('light', !dark);
+    })();
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -23,33 +31,54 @@
             mono: ['"JetBrains Mono"', '"SF Mono"', 'Menlo', 'Consolas', 'monospace'],
           },
           colors: {
-            ink: { bg: '#0e0e10', surface: '#161618', raised: '#1c1c1f', border: '#26262b', muted: '#7a7a82', text: '#e8e6df', accent: '#c9a875' },
+            ink: {
+              bg: 'rgb(var(--ink-bg) / <alpha-value>)',
+              surface: 'rgb(var(--ink-surface) / <alpha-value>)',
+              raised: 'rgb(var(--ink-raised) / <alpha-value>)',
+              border: 'rgb(var(--ink-border) / <alpha-value>)',
+              muted: 'rgb(var(--ink-muted) / <alpha-value>)',
+              text: 'rgb(var(--ink-text) / <alpha-value>)',
+              accent: 'rgb(var(--ink-accent) / <alpha-value>)',
+            },
+            // hairlines and tints: white on dark, near-black on light
+            edge: 'rgb(var(--edge) / <alpha-value>)',
           },
         },
       },
     };
   </script>
   <style>
-    :root { --accent: #c9a875; }
-    body { background: #0e0e10; }
+    /* Dark (obsidian) — default */
+    :root {
+      --ink-bg: 14 14 16; --ink-surface: 22 22 24; --ink-raised: 28 28 31; --ink-border: 38 38 43;
+      --ink-muted: 122 122 130; --ink-text: 232 230 223; --ink-accent: 201 168 117; --edge: 255 255 255;
+      color-scheme: dark;
+    }
+    /* Light (paper) — matches the SemiConductor site */
+    html.light {
+      --ink-bg: 250 250 247; --ink-surface: 255 255 255; --ink-raised: 243 242 237; --ink-border: 232 230 223;
+      --ink-muted: 107 105 96; --ink-text: 31 29 24; --ink-accent: 138 90 43; --edge: 31 29 24;
+      color-scheme: light;
+    }
+    body { background: rgb(var(--ink-bg)); }
     .grid-bg {
       background-image:
-        linear-gradient(rgba(232,230,223,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(232,230,223,0.03) 1px, transparent 1px);
+        linear-gradient(rgb(var(--ink-text) / 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(var(--ink-text) / 0.04) 1px, transparent 1px);
       background-size: 48px 48px;
       mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
       -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
     }
-    .glass { background: rgba(14,14,16,0.72); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .glass { background: rgb(var(--ink-bg) / 0.72); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     .card { transition: border-color .2s, transform .2s, background-color .2s; }
-    .card:hover { border-color: rgba(255,255,255,0.22); transform: translateY(-2px); }
-    .tab[aria-selected="true"] { color: #e8e6df; border-color: #c9a875; background: rgba(255,255,255,0.04); }
-    .tab[aria-selected="true"] .tab-idx { color: var(--accent); }
+    .card:hover { border-color: rgb(var(--edge) / 0.22); transform: translateY(-2px); }
+    .tab[aria-selected="true"] { color: rgb(var(--ink-text)); border-color: rgb(var(--ink-accent)); background: rgb(var(--edge) / 0.04); }
+    .tab[aria-selected="true"] .tab-idx { color: rgb(var(--ink-accent)); }
     .fade-in { animation: fade .3s ease both; }
     @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-    .pulse-dot { box-shadow: 0 0 0 0 rgba(201,168,117,.6); animation: pulse 2s infinite; }
-    @keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(201,168,117,0); } 100% { box-shadow: 0 0 0 0 rgba(201,168,117,0); } }
-    dialog::backdrop { background: rgba(0,0,0,.7); backdrop-filter: blur(4px); }
+    .pulse-dot { box-shadow: 0 0 0 0 rgb(var(--ink-accent) / .6); animation: pulse 2s infinite; }
+    @keyframes pulse { 70% { box-shadow: 0 0 0 8px rgb(var(--ink-accent) / 0); } 100% { box-shadow: 0 0 0 0 rgb(var(--ink-accent) / 0); } }
+    dialog::backdrop { background: rgb(var(--ink-bg) / .75); backdrop-filter: blur(4px); }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
   </style>
 </head>
@@ -59,7 +88,7 @@
   <header id="top" class="fixed inset-x-0 top-0 z-40 border-b border-ink-border/70 glass">
     <nav class="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
       <a href="#top" class="flex items-center gap-2 font-display text-lg text-ink-text">
-        <span class="grid h-7 w-7 place-items-center rounded-md border border-white/15 font-mono text-xs">A&amp;</span>
+        <span class="grid h-7 w-7 place-items-center rounded-md border border-edge/15 font-mono text-xs">A&amp;</span>
         Algos <span class="text-ink-muted">&amp;</span> Co.
       </a>
       <div class="hidden items-center gap-7 font-mono text-xs uppercase tracking-wider text-ink-text/60 md:flex">
@@ -69,8 +98,9 @@
         <a href="#faq" class="hover:text-ink-accent">FAQ</a>
       </div>
       <div class="flex items-center gap-2">
-        <button data-open-discord class="hidden rounded-md border border-white/15 px-3 py-1.5 text-xs font-medium text-ink-text hover:border-white/40 sm:inline-block">Join Discord</button>
-        <a href="#pass" class="rounded-md bg-ink-text px-3 py-1.5 text-xs font-semibold text-black hover:bg-ink-accent">Get a Pass</a>
+        <button id="themeToggle" class="rounded-md px-2 py-1.5 font-mono text-[11px] uppercase tracking-wider text-ink-muted hover:text-ink-accent" aria-label="Toggle light and dark theme"></button>
+        <button data-open-discord class="hidden rounded-md border border-edge/15 px-3 py-1.5 text-xs font-medium text-ink-text hover:border-edge/40 sm:inline-block">Join Discord</button>
+        <a href="#pass" class="rounded-md bg-ink-text px-3 py-1.5 text-xs font-semibold text-ink-bg hover:bg-ink-accent">Get a Pass</a>
         <button id="menuBtn" class="ml-1 grid h-8 w-8 place-items-center rounded-md border border-ink-border md:hidden" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
         </button>
@@ -82,7 +112,7 @@
         <a href="#calendar" class="py-2 hover:text-ink-accent">Calendar</a>
         <a href="#pass" class="py-2 hover:text-ink-accent">Pass</a>
         <a href="#faq" class="py-2 hover:text-ink-accent">FAQ</a>
-        <button data-open-discord class="mt-2 rounded-md border border-white/15 py-2 text-left normal-case tracking-normal text-ink-text px-3">Join Discord</button>
+        <button data-open-discord class="mt-2 rounded-md border border-edge/15 py-2 text-left normal-case tracking-normal text-ink-text px-3">Join Discord</button>
       </div>
     </div>
   </header>
@@ -103,8 +133,8 @@
           Algos &amp; Co. brings together tech professionals, creators, and engineers across DC, Maryland, and Virginia to study, ship, hire, and connect — with execution over talk.
         </p>
         <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-          <a href="#tracks" class="rounded-md bg-ink-text px-5 py-3 text-center text-sm font-semibold text-black hover:bg-ink-accent">Explore the 4 tracks →</a>
-          <button data-open-discord class="rounded-md border border-white/15 px-5 py-3 text-sm font-medium text-ink-text hover:border-white/40">Join the Discord</button>
+          <a href="#tracks" class="rounded-md bg-ink-text px-5 py-3 text-center text-sm font-semibold text-ink-bg hover:bg-ink-accent">Explore the 4 tracks →</a>
+          <button data-open-discord class="rounded-md border border-edge/15 px-5 py-3 text-sm font-medium text-ink-text hover:border-edge/40">Join the Discord</button>
         </div>
 
         <dl class="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-ink-border bg-ink-border sm:grid-cols-4">
@@ -124,7 +154,7 @@
             <p class="font-mono text-xs uppercase tracking-widest text-ink-muted">§01 — Core lanes</p>
             <h2 class="font-display mt-2 text-3xl font-normal text-ink-text sm:text-4xl">Four tracks. One collective.</h2>
           </div>
-          <p class="max-w-sm text-sm text-ink-text/60">Pick a lane or run all four. Each track has its own cadence and deliverables.</p>
+          <p class="max-w-sm text-sm text-ink-text/60">Pick a lane or run all four. Each track has its own cadence, deliverables, and Discord channels.</p>
         </div>
 
         <div role="tablist" aria-label="Tracks" class="mt-10 grid grid-cols-2 gap-2 lg:grid-cols-4" id="tabList"></div>
@@ -170,7 +200,7 @@
               <p class="mt-1 font-display text-3xl text-ink-text" id="passName">Fall '26 Pass</p>
               <p class="mt-1 text-sm text-ink-text/60" id="passDesc">All build sprints + one study cohort</p>
             </div>
-            <div class="mt-10 flex items-end justify-between border-t border-dashed border-white/15 pt-4">
+            <div class="mt-10 flex items-end justify-between border-t border-dashed border-edge/15 pt-4">
               <div>
                 <p class="font-mono text-[11px] uppercase tracking-widest text-ink-muted">Price</p>
                 <p class="text-xl font-semibold text-ink-text" id="passPrice">Coming soon</p>
@@ -187,7 +217,7 @@
             </fieldset>
             <div class="mt-6 flex flex-col items-start justify-between gap-4 border-t border-ink-border pt-6 sm:flex-row sm:items-center">
               <p class="text-sm text-ink-text/60">Passes are coming soon. In the meantime, RSVP for the next event on <span class="text-ink-text">Posh</span>. Prefer Luma? <a id="lumaLink" href="https://luma.com/1qxb9px8" target="_blank" rel="noopener" class="text-ink-accent hover:underline">Register there ↗</a></p>
-              <a id="poshLink" href="https://posh.vip/e/algos-co-builders-workshop" target="_blank" rel="noopener" class="inline-flex w-full items-center justify-center gap-2 rounded-md bg-ink-text px-5 py-3 text-sm font-semibold text-black hover:bg-ink-accent sm:w-auto">
+              <a id="poshLink" href="https://posh.vip/e/algos-co-builders-workshop" target="_blank" rel="noopener" class="inline-flex w-full items-center justify-center gap-2 rounded-md bg-ink-text px-5 py-3 text-sm font-semibold text-ink-bg hover:bg-ink-accent sm:w-auto">
                 RSVP on Posh <span aria-hidden="true">↗</span>
               </a>
             </div>
@@ -213,9 +243,9 @@
         <div class="flex flex-col items-start justify-between gap-6 rounded-xl border border-ink-border p-8 sm:flex-row sm:items-center glass">
           <div>
             <h3 class="font-display text-2xl font-normal text-ink-text">Ship something this month.</h3>
-            <p class="mt-1 text-sm text-ink-text/60">Drop into the Discord and grab a seat at the next event.</p>
+            <p class="mt-1 text-sm text-ink-text/60">Drop into the Discord, find your channels, and grab a seat at the next event.</p>
           </div>
-          <button data-open-discord class="w-full rounded-md bg-ink-text px-5 py-3 text-sm font-semibold text-black hover:bg-ink-accent sm:w-auto">Join the Discord</button>
+          <button data-open-discord class="w-full rounded-md bg-ink-text px-5 py-3 text-sm font-semibold text-ink-bg hover:bg-ink-accent sm:w-auto">Join the Discord</button>
         </div>
       </div>
     </section>
@@ -241,11 +271,17 @@
         <p class="font-mono text-[11px] uppercase tracking-widest text-ink-muted">Community</p>
         <h3 class="font-display text-lg font-normal text-ink-text">Join the Algos &amp; Co. Discord</h3>
       </div>
-      <button id="closeModal" class="grid h-8 w-8 place-items-center rounded-md border border-ink-border hover:border-white/30" aria-label="Close">✕</button>
+      <button id="closeModal" class="grid h-8 w-8 place-items-center rounded-md border border-ink-border hover:border-edge/30" aria-label="Close">✕</button>
     </div>
     <div class="px-5 py-5">
-      <p class="text-sm text-ink-text/60">Event drops, build chat, and community updates all happen in the Discord.</p>
-      <a id="discordLink" href="https://discord.gg/x24CFzMky" target="_blank" rel="noopener" class="mt-5 flex w-full items-center justify-center gap-2 rounded-md bg-[#5865F2] px-5 py-3 text-sm font-semibold text-white hover:bg-[#4752c4]">
+      <p class="text-sm text-ink-text/60">Event drops, build chat, and job leads all happen in the Discord.</p>
+      <ul class="mt-4 space-y-2 text-sm">
+        <li class="flex justify-between gap-3 border-b border-ink-border pb-2"><span class="text-ink-text">Certifications</span><span class="text-right font-mono text-xs text-ink-muted">#aws #google #palantir #salesforce</span></li>
+        <li class="flex justify-between gap-3 border-b border-ink-border pb-2"><span class="text-ink-text">Careers</span><span class="text-right font-mono text-xs text-ink-muted">#ai #cybersecurity #software-engineering + more</span></li>
+        <li class="flex justify-between gap-3 border-b border-ink-border pb-2"><span class="text-ink-text">Jobs</span><span class="text-right font-mono text-xs text-ink-muted">#job-opportunities #job-referrals #job-seekers</span></li>
+        <li class="flex justify-between gap-3"><span class="text-ink-text">Cities</span><span class="text-right font-mono text-xs text-ink-muted">#dc #balt #nyc #atl + more</span></li>
+      </ul>
+      <a id="discordLink" href="https://discord.gg/rqYhGv5Ww4" target="_blank" rel="noopener" class="mt-5 flex w-full items-center justify-center gap-2 rounded-md bg-[#5865F2] px-5 py-3 text-sm font-semibold text-white hover:bg-[#4752c4]">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18.1a19.9 19.9 0 0 0 6 3l1.3-2.1a12.9 12.9 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1l1.3 2.1a19.8 19.8 0 0 0 6-3c.5-5.2-.8-9.7-3.6-13.7ZM8.5 15.3c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm7 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>
         Open Discord invite
       </a>
@@ -257,7 +293,7 @@
     const CONFIG = {
       poshUrl: 'https://posh.vip/e/algos-co-builders-workshop',
       lumaUrl: 'https://luma.com/1qxb9px8',
-      discordInvite: 'https://discord.gg/x24CFzMky'
+      discordInvite: 'https://discord.gg/rqYhGv5Ww4'
     };
 
     /* ============ DATA ============ */
@@ -271,7 +307,7 @@
           { k: 'Cloud Architecture', v: 'Well-Architected reviews and whiteboard design reps' },
         ],
         deliverables: ['Weekly study roadmap', 'Accountability pod of 4–6', 'Hands-on lab environment', 'Mock exam + debrief before test day'],
-        cadence: '6-week cohorts · weekly check-ins',
+        cadence: '6-week cohorts · weekly check-ins', channels: ['#aws', '#google', '#palantir', '#salesforce'],
       },
       {
         id: 'builder', idx: '02', name: 'Builder Studio', short: 'Builder', tag: 'AI & Engineering Projects',
@@ -282,7 +318,7 @@
           { k: 'Threat dashboards', v: 'Ingest feeds, visualize signals, alert on anomalies' },
         ],
         deliverables: ['Starter repo + scoped brief', 'Live deploy by end of session', '3-minute demo slot', 'Peer code review in Discord'],
-        cadence: '2-hour sprints · bi-weekly',
+        cadence: '2-hour sprints · bi-weekly', channels: ['#ai', '#software-engineering', '#data-science'],
       },
       {
         id: 'talent', idx: '03', name: 'Talent & Project Exchange', short: 'Talent', tag: 'Work & Opportunities',
@@ -293,7 +329,7 @@
           { k: 'Co-founder matching', v: 'Paired by complementary skills and commitment level' },
         ],
         deliverables: ['Builder profile with proof-of-work', 'Monthly opportunity digest', 'Recruiter office hours', 'Intro requests via the team'],
-        cadence: 'Always on · monthly digest',
+        cadence: 'Always on · monthly digest', channels: ['#job-opportunities', '#job-referrals', '#job-seekers', '#employers'],
       },
       {
         id: 'community', idx: '04', name: 'Community & Social', short: 'Community', tag: 'Gatherings',
@@ -304,7 +340,7 @@
           { k: 'Fireside chats', v: 'Small-room conversations with operators and leaders' },
         ],
         deliverables: ['Monthly co-working day', 'Quarterly social mixer', 'Fireside chat series', 'Early access to the 2027 summit'],
-        cadence: 'Monthly · plus quarterly mixers',
+        cadence: 'Monthly · plus quarterly mixers', channels: ['#dc', '#balt', '#career-resources-opportunities'],
       },
     ];
 
@@ -323,7 +359,7 @@
       { q: 'Do I need to be an expert to join a build sprint?', a: 'No. Briefs are scoped so you can ship in two hours. Bring a laptop and something you want to build; mentors float the room.' },
       { q: 'How do study sprints work?', a: 'Six-week cohorts with a weekly roadmap, a small accountability pod, labs, and a mock exam before your test date.' },
       { q: 'Where are events held?', a: 'Most sessions run at Gaylord National Harbor, with socials at Harbour Social and some office hours on the Discord stage.' },
-      { q: 'How do I get listed in the Talent Exchange?', a: 'Join Discord, complete at least one sprint, and submit your profile in the Discord. Profiles are verified against shipped work.' },
+      { q: 'How do I get listed in the Talent Exchange?', a: 'Join the Discord and introduce yourself in #job-seekers with links to work you have shipped. Open roles land in #job-opportunities and #job-referrals, and employers post in #employers.' },
     ];
 
     /* ============ HELPERS ============ */
@@ -342,7 +378,7 @@
     function renderTabs() {
       $('#tabList').innerHTML = TRACKS.map(t => `
         <button role="tab" id="tab-${t.id}" aria-controls="tabPanel" aria-selected="${t.id === activeTrack}" tabindex="${t.id === activeTrack ? 0 : -1}"
-          data-track="${t.id}" class="tab rounded-lg border border-ink-border px-4 py-3 text-left text-ink-text/60 transition hover:border-white/25 hover:text-ink-text">
+          data-track="${t.id}" class="tab rounded-lg border border-ink-border px-4 py-3 text-left text-ink-text/60 transition hover:border-edge/25 hover:text-ink-text">
           <span class="tab-idx block font-mono text-[11px] tracking-widest text-ink-muted">${t.idx}</span>
           <span class="mt-1 block text-sm font-medium sm:hidden">${t.short}</span>
           <span class="mt-1 hidden text-sm font-medium sm:block">${t.name}</span>
@@ -357,7 +393,7 @@
         <div class="fade-in grid gap-4 lg:grid-cols-3">
           <article class="rounded-xl border border-ink-border bg-ink-surface/60 p-6 lg:col-span-2">
             <div class="flex flex-wrap items-center gap-2">
-              <span class="rounded border border-white/15 px-2 py-0.5 font-mono text-[11px] uppercase tracking-wider text-ink-text/60">${t.tag}</span>
+              <span class="rounded border border-edge/15 px-2 py-0.5 font-mono text-[11px] uppercase tracking-wider text-ink-text/60">${t.tag}</span>
               <span class="font-mono text-[11px] uppercase tracking-wider text-ink-muted">${t.cadence}</span>
             </div>
             <h3 class="font-display mt-4 text-2xl font-normal text-ink-text">${t.name}</h3>
@@ -386,9 +422,13 @@
                     <span class="text-ink-text/90">${e.title}</span>
                   </li>`; }).join('') : '<li class="text-ink-muted">No dates announced yet.</li>'}
               </ul>
+              <p class="mt-5 font-mono text-[11px] uppercase tracking-widest text-ink-muted">In the Discord</p>
+              <div class="mt-2 flex flex-wrap gap-1.5">
+                ${t.channels.map(c => `<span class="rounded border border-ink-border px-1.5 py-0.5 font-mono text-[11px] text-ink-text/80">${c}</span>`).join('')}
+              </div>
               <div class="mt-5 flex gap-2">
-                <a href="${CONFIG.poshUrl}" target="_blank" rel="noopener" class="flex-1 rounded-md bg-ink-text px-3 py-2 text-center text-xs font-semibold text-black hover:bg-ink-accent">RSVP on Posh ↗</a>
-                <button data-open-discord class="flex-1 rounded-md border border-white/15 px-3 py-2 text-xs font-medium text-ink-text/90 hover:border-white/40">Join Discord</button>
+                <a href="${CONFIG.poshUrl}" target="_blank" rel="noopener" class="flex-1 rounded-md bg-ink-text px-3 py-2 text-center text-xs font-semibold text-ink-bg hover:bg-ink-accent">RSVP on Posh ↗</a>
+                <button data-open-discord class="flex-1 rounded-md border border-edge/15 px-3 py-2 text-xs font-medium text-ink-text/90 hover:border-edge/40">Join Discord</button>
               </div>
             </div>
           </aside>
@@ -421,7 +461,7 @@
       const opts = [{ id: 'all', short: 'All' }, ...TRACKS];
       $('#filterBar').innerHTML = opts.map(o => `
         <button data-filter="${o.id}" aria-pressed="${filter === o.id}"
-          class="rounded-full border px-3 py-1 font-mono text-[11px] uppercase tracking-wider transition ${filter === o.id ? 'border-ink-accent bg-ink-accent text-black' : 'border-white/15 text-ink-text/60 hover:border-white/40 hover:text-ink-text'}">${o.short}</button>`).join('');
+          class="rounded-full border px-3 py-1 font-mono text-[11px] uppercase tracking-wider transition ${filter === o.id ? 'border-ink-accent bg-ink-accent text-ink-bg' : 'border-edge/15 text-ink-text/60 hover:border-edge/40 hover:text-ink-text'}">${o.short}</button>`).join('');
     }
     function renderEvents() {
       const list = upcoming.filter(e => filter === 'all' || e.track === filter);
@@ -436,12 +476,12 @@
             </div>
             <div class="col-span-9 sm:col-span-5">
               <p class="text-sm font-medium text-ink-text">${e.title}${e.featured ? ' <span class="ml-1 rounded border border-ink-accent/50 px-1.5 py-px align-middle font-mono text-[10px] uppercase tracking-wider text-ink-accent">Tickets live</span>' : ''}</p>
-              ${e.url ? `<a href="${CONFIG.poshUrl}" target="_blank" rel="noopener" class="mt-1 inline-block font-mono text-[11px] uppercase tracking-wider text-ink-accent hover:underline">Register ↗</a>` : ''}
+              ${e.url ? `<p class="mt-1 font-mono text-[11px] uppercase tracking-wider"><a href="${CONFIG.poshUrl}" target="_blank" rel="noopener" class="text-ink-accent hover:underline">Register on Posh ↗</a><span class="mx-2 text-ink-muted">·</span><a href="${CONFIG.lumaUrl}" target="_blank" rel="noopener" class="text-ink-accent hover:underline">Luma ↗</a></p>` : ''}
               <p class="mt-0.5 text-xs text-ink-muted sm:hidden">${e.venue} · ${t.short}</p>
             </div>
             <div class="hidden text-sm text-ink-text/60 sm:col-span-3 sm:block">${e.venue}</div>
             <div class="hidden text-right sm:col-span-2 sm:block">
-              <span class="rounded border border-white/15 px-2 py-0.5 font-mono text-[11px] uppercase tracking-wider text-ink-text/60">${t.short}</span>
+              <span class="rounded border border-edge/15 px-2 py-0.5 font-mono text-[11px] uppercase tracking-wider text-ink-text/60">${t.short}</span>
             </div>
           </li>`;
       }).join('');
@@ -456,11 +496,11 @@
     let tier = TIERS.find(t => t.default).id;
     function renderTiers() {
       $('#tierList').innerHTML = TIERS.map(t => `
-        <label class="card cursor-pointer rounded-lg border p-4 ${tier === t.id ? 'border-ink-accent bg-white/[0.04]' : 'border-ink-border'}">
+        <label class="card cursor-pointer rounded-lg border p-4 ${tier === t.id ? 'border-ink-accent bg-edge/[0.04]' : 'border-ink-border'}">
           <input type="radio" name="tier" value="${t.id}" class="sr-only" ${tier === t.id ? 'checked' : ''} />
           <div class="flex items-center justify-between">
             <span class="text-sm font-medium text-ink-text">${t.name}</span>
-            <span class="h-3.5 w-3.5 rounded-full border ${tier === t.id ? 'border-ink-accent bg-ink-accent' : 'border-white/30'}"></span>
+            <span class="h-3.5 w-3.5 rounded-full border ${tier === t.id ? 'border-ink-accent bg-ink-accent' : 'border-edge/30'}"></span>
           </div>
           <p class="mt-2 text-xl font-semibold text-ink-text">${t.price}</p>
           <p class="mt-1 text-xs text-ink-muted">${t.desc}</p>
@@ -478,7 +518,7 @@
 
     // decorative pass "code"
     $('#passCode').innerHTML = Array.from({ length: 36 }, (_, i) =>
-      `<span class="h-1.5 w-1.5 ${[0,2,3,7,9,11,14,15,17,20,22,26,27,29,31,33,35].includes(i) ? 'bg-ink-accent' : 'bg-white/10'}"></span>`).join('');
+      `<span class="h-1.5 w-1.5 ${[0,2,3,7,9,11,14,15,17,20,22,26,27,29,31,33,35].includes(i) ? 'bg-ink-accent' : 'bg-edge/10'}"></span>`).join('');
 
     /* ============ FAQ ============ */
     $('#faqList').innerHTML = FAQ.map(f => `
@@ -501,6 +541,19 @@
     $('#closeModal').addEventListener('click', () => modal.close());
     modal.addEventListener('click', e => { if (e.target === modal) modal.close(); });
     $('#discordLink').href = CONFIG.discordInvite;
+
+    /* ============ THEME ============ */
+    function syncTheme() {
+      const light = document.documentElement.classList.contains('light');
+      $('#themeToggle').textContent = light ? '☀ light' : '☾ dark';
+      document.querySelector('meta[name="theme-color"]').content = light ? '#fafaf7' : '#0e0e10';
+    }
+    $('#themeToggle').addEventListener('click', () => {
+      const light = document.documentElement.classList.toggle('light');
+      try { localStorage.setItem('theme', light ? 'light' : 'dark'); } catch (e) {}
+      syncTheme();
+    });
+    syncTheme();
 
     /* ============ MOBILE MENU ============ */
     $('#menuBtn').addEventListener('click', () => {
