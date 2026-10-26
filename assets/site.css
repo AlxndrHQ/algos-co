@@ -1,12 +1,19 @@
 /* Algos & Co. — shared styles for every page */
 
-/* Inter is self-hosted (SIL Open Font License, see fonts/OFL.txt) so visitors' browsers never call Google */
+/* Inter is self-hosted (SIL Open Font License, see fonts/OFL-Inter.txt and fonts/OFL-Playfair.txt) so visitors' browsers never call Google */
 @font-face {
   font-family: 'Inter';
   font-style: normal;
   font-weight: 400 800;
   font-display: swap;
   src: url('fonts/inter-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('fonts/playfair-latin.woff2') format('woff2');
 }
 
 /* Light (paper) — default; dark follows the device setting */
@@ -30,7 +37,7 @@ a { color: inherit; text-decoration: none; }
 @media (min-width: 640px) { .wrap { padding: 0 32px; } }
 
 /* logo — same mark as the original site */
-.logo { display: inline-flex; align-items: center; gap: 9px; font-family: "Iowan Old Style", "Apple Garamond", Georgia, serif; font-size: 19px; letter-spacing: -.01em; }
+.logo { display: inline-flex; align-items: center; gap: 9px; font-family: "Playfair Display", Georgia, serif; font-size: 20px; font-weight: 500; letter-spacing: -.005em; }
 .logo .glyph { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid var(--line); border-radius: 6px; font-family: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace; font-size: 11px; font-weight: 500; }
 .logo .amp { color: var(--muted); }
 
