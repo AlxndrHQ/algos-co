@@ -156,3 +156,13 @@ footer { padding: 26px 0 40px; }
 
 :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+
+/* logo lockup: wordmark + tagline side by side on desktop, stacked on phones */
+.logo .glyph.pf { font-family: "Playfair Display", Georgia, serif; font-size: 12.5px; font-weight: 600; letter-spacing: -.01em; padding-bottom: 1px; }
+.lockup { display: flex; align-items: baseline; gap: 14px; }
+.lockup .tagline { display: inline; font-family: Inter, -apple-system, system-ui, sans-serif; }
+@media (max-width: 639px) {
+  .lockup { flex-direction: column; align-items: flex-start; gap: 3px; }
+  .lockup .name { line-height: 1; }
+  .lockup .tagline { font-size: 8.5px; letter-spacing: .18em; }
+}
