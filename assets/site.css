@@ -166,3 +166,9 @@ footer { padding: 26px 0 40px; }
   .lockup .name { line-height: 1; }
   .lockup .tagline { font-size: 8.5px; letter-spacing: .18em; }
 }
+
+/* phones: wordmark only, tagline hidden */
+@media (max-width: 639px) {
+  .lockup .tagline { display: none; }
+  .lockup .name { line-height: inherit; }
+}
