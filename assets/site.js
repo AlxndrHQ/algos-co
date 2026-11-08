@@ -12,13 +12,13 @@ const EVENTS = [
 
 const TRACKS = [
   { word: 'Certs', label: 'The study sprints', name: 'Upskill & Certifications', cadence: '6-week cohorts · weekly check-ins',
-    items: [['AWS AI Practitioner', 'Bedrock & SageMaker labs'], ['CompTIA Security+', 'PBQ drills, timed practice'], ['Cloud Architecture', 'Well-Architected reviews']] },
+    items: [['AWS AI Practitioner', 'Bedrock & SageMaker labs', 'https://aws.amazon.com/certification/certified-ai-practitioner/'], ['CompTIA Security+', 'PBQ drills, timed practice', 'https://www.comptia.org/en-us/certifications/security/'], ['Cloud Architecture', 'Well-Architected reviews', 'https://aws.amazon.com/architecture/well-architected/']] },
   { word: 'Build', label: 'AI & engineering projects', name: 'Builder Studio', cadence: '2-hour sprints · bi-weekly',
     items: [['AI wrappers', 'real UI, real URL'], ['RAG agents', 'index, retrieve, evaluate'], ['Threat dashboards', 'ingest, visualize, alert']] },
   { word: 'Roles', label: 'Work & opportunities', name: 'Talent & Project Exchange', cadence: 'Always on · monthly digest',
     items: [['Verified profiles', 'shipped work, not a résumé'], ['Project board', 'freelance & contract scopes'], ['Co-founder matching', 'complementary skills']] },
   { word: 'Meet', label: 'Gatherings', name: 'Community & Social', cadence: 'Monthly · plus quarterly mixers',
-    items: [['Co-working', 'Gaylord National Harbor'], ['Socials', 'Harbour Social'], ['Fireside chats', 'operators & leaders']] },
+    items: [['Co-working', 'Gaylord National Harbor', 'https://posh.vip/g/algos-co'], ['Socials', 'Harbour Social', 'https://posh.vip/g/algos-co'], ['Fireside chats', 'operators & leaders', 'https://posh.vip/g/algos-co']] },
 ];
 
 const FAQ = [
@@ -59,7 +59,7 @@ if (trackGrid) trackGrid.innerHTML = TRACKS.map((t, i) => `
       <p class="h" style="font-size:19px">${esc(t.name)}</p>
       <p class="label muted" style="margin-top:6px">${esc(t.cadence)}</p>
     </div>
-    <ul class="list">${t.items.map((it, j) => `<li><span class="n">0${j + 1}</span><span class="txt"><span class="t">${esc(it[0])}</span><br><span class="d">${esc(it[1])}</span></span></li>`).join('')}</ul>
+    <ul class="list">${t.items.map((it, j) => `<li><span class="n">0${j + 1}</span><span class="txt"><span class="t">${it[2] ? `<a class="item-link" href="${esc(it[2])}" target="_blank" rel="noopener">${esc(it[0])}</a>` : esc(it[0])}</span><br><span class="d">${esc(it[1])}</span></span></li>`).join('')}</ul>
   </article>`).join('');
 
 /* ============ CALENDAR ============ */
